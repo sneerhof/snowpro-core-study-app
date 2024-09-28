@@ -8,7 +8,7 @@ import re
 # Load questions from CSV
 @st.cache_data
 def load_data():
-    file_path = '/workspaces/snowpro-core/all_questions - Sheet1.csv'  # Updated file path
+    file_path = 'all_questions - Sheet1.csv'  # Updated file path
     return pd.read_csv(file_path)
 
 questions_df = load_data()
