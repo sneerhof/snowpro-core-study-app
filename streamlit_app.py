@@ -5,6 +5,11 @@ import pandas as pd
 import random
 import re
 
+st.set_page_config(
+    page_title="SnowPro Core Study App",
+    page_icon="❄️",
+)
+
 # Load questions from CSV
 @st.cache_data
 def load_data():
