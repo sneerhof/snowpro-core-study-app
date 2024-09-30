@@ -70,9 +70,14 @@ def start_quiz_callback():
 # SECTION 3: Display Questions
 
 # Function to display a single question
+# Function to display a single question with optional image
 def display_question(question_row, question_number, total_questions):
     st.write(f"### Question {question_number + 1} of {total_questions}")
     st.write(question_row['QUESTION'])
+
+    # Check if there is an image for this question and display it
+    if pd.notna(question_row.get('Image URL')):
+        st.image(question_row['Image URL'], caption="Related Image", use_column_width=True)
 
     # Unique key for each question
     question_key = f"question_{question_number}"
@@ -102,7 +107,6 @@ def display_question(question_row, question_number, total_questions):
                 key=f"{question_key}_selected"
             )
         else:
-            # Radio button with None as default value
             selected_option = st.radio(
                 "Your Answer:",
                 options,
@@ -218,9 +222,35 @@ def display_quiz_review():
 # SECTION 5: Main Quiz Logic and Final Output
 
 # Function to start the quiz interface
-# Function to start the quiz interface
 def start_quiz():
     st.header("❄️ :blue[SnowPro Core] Study App",divider="grey")
+
+# --- TEST MODE: Add the QID input for testing specific questions ---
+    qid = st.text_input(
+        "Enter the QID to test a specific question (for debugging):"
+    )
+
+    # Button to test the specific question by QID
+    if st.button("Test Question"):
+        # Convert QID input to string to handle any type differences
+        qid_str = str(qid)
+
+        # Ensure QID column is treated as string for comparison
+        questions_df['QID'] = questions_df['QID'].astype(str)
+
+        # Search for the question in the DataFrame by QID
+        matching_questions = questions_df[questions_df['QID'] == qid_str]
+
+        # Check if a matching question was found
+        if not matching_questions.empty:
+            question_row = matching_questions.iloc[0]  # Get the first matching row
+            display_question(question_row, question_number=0, total_questions=1)  # Display the question for testing
+        else:
+            st.error("Question not found! Please ensure you entered the correct QID.")
+
+        return  # Exit after testing
+
+    # --- REGULAR QUIZ LOGIC FOLLOWS BELOW ---
 
     # Initialize session state variables
     if 'quiz_started' not in st.session_state:
