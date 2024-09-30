@@ -399,12 +399,12 @@ auto_resume = true;
 
 The image below is a graphical representation of the warehouse utilization across two days. 
 
-What action should be taken to address this situation?",C,Increase the warehouse size from Medium to 2XL.,Increase the value for the parameter MAX_CONCURRENCY_LEVEL.,Configure the warehouse to a multi-cluster warehouse.,Lower the value of the parameter STATEMENT_QUEUED_TIMEOUT_IN_SECONDS,,,Multi-Cluster Warehouses = scaling out for concurrency / to reduce queueing,https://docs.snowflake.com/en/user-guide/performance-query-warehouse-queue#options-for-reducing-queues,https://drive.google.com/file/d/1yvqTHh1T_pipFk483kMkKcYcuH2qHir7/view?usp=drive_link
+What action should be taken to address this situation?",C,Increase the warehouse size from Medium to 2XL.,Increase the value for the parameter MAX_CONCURRENCY_LEVEL.,Configure the warehouse to a multi-cluster warehouse.,Lower the value of the parameter STATEMENT_QUEUED_TIMEOUT_IN_SECONDS,,,Multi-Cluster Warehouses = scaling out for concurrency / to reduce queueing,https://docs.snowflake.com/en/user-guide/performance-query-warehouse-queue#options-for-reducing-queues,https://i.imgur.com/dELZwcZ.jpeg
 168,"In a Snowflake role hierarchy, what is the top-level role?",C,SYSADMIN,ORGADMIN,ACCOUNTADMIN,SECURITYADMIN,,,ORGADMIN is a separate role and not part of the role hierarchy,https://docs.snowflake.com/en/user-guide/security-access-control-overview#label-role-hierarchy-and-privilege-inheritance,
 169,"Assume there is a table consisting of five micro-paritions with values ranging from A to Z. 
 
 Which diagram indicates a well-clustered table?",A,Option A,Option B,Option C,Option D,,,"A) Clustering Depth is ideal (=1)
-In the exam 25-MAR-2023",https://docs.snowflake.com/en/user-guide/tables-clustering-micropartitions#clustering-depth,https://drive.google.com/file/d/18jT3P6dAVxd2beDxJrWQpCY9RMEy55mM/view?usp=drive_link
+In the exam 25-MAR-2023",https://docs.snowflake.com/en/user-guide/tables-clustering-micropartitions#clustering-depth,https://i.imgur.com/0u4Zjc4.jpeg
 170,The is the minimum Fail-safe retention time period for transient tables?,D,1 day,7 days,12 hours,0 days,,,"Failsafe for Permanent tables = 7 days, for Temporary, Transient and External tables = 0 days (no failsafe)
 **Concept included in test from Sept 2024",https://docs.snowflake.com/en/user-guide/data-failsafe,
 171,Which command can be used to load data files into a Snowflake stage?,C,JOIN,COPY INTO,PUT,GET,,,"From Local / on-prem into internal stage → PUT
@@ -431,7 +431,7 @@ A user needs to extract the dealership information from the JSON.
 
 How can this be accomplished?",A,select src: dealership from car_sales;,select src.dealership from car_sales;,select src: Dealership from car_sales;,select dealership from car_sales;,,,"column name is src (case insensitive)
 Keys in brackets are case sensitive (""dealership"", ""date"", etc.)
-**Concept included in test from Sept 2024",https://docs.snowflake.com/en/user-guide/querying-semistructured,https://drive.google.com/file/d/1EGbWVsq2ZIKqcXkLZkRTkWy0AakS4seA/view?usp=drive_link
+**Concept included in test from Sept 2024",https://docs.snowflake.com/en/user-guide/querying-semistructured,https://i.imgur.com/jf2FM6F.jpeg
 183,Which Snowflake objects can be shared with other Snowflake accounts? (Choose three.),"C,E,F",Schemas,Roles,Secure Views,Stored Procedures,Tables,Secure User-Defined Functions (UDFs),,https://docs.snowflake.com/en/user-guide/data-sharing-intro,
 184,What is the SNOWFLAKE ACCOUNT_USAGE view that contains information about which objects were read by queries within the last 365 days (1 year)?,C,VIEWS_HISTORY,OBJECT_HISTORY,ACCESS_HISTORY,LOGIN_HISTORY,,,**Concept included in test from Sept 2024,"https://docs.snowflake.com/en/user-guide/access-history, https://docs.snowflake.com/en/sql-reference/account-usage/access_history ",
 185,Which privilege is required for a role to be able to resume a suspended warehouse if auto-resume is not enabled?,B,USAGE,OPERATE,MONITOR,MODIFY,,,"USAGE → use Warehouse, eg. run queries on it
