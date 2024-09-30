@@ -14,7 +14,12 @@ st.set_page_config(
 @st.cache_data
 def load_data():
     file_path = 'all_questions - Sheet1.csv'  # Updated file path
-    return pd.read_csv(file_path)
+    data = pd.read_csv(file_path)
+
+    # Ensure QID column is treated as string
+    data['QID'] = data['QID'].astype(str)
+
+    return data
 
 questions_df = load_data()
 
@@ -78,6 +83,9 @@ def display_question(question_row, question_number, total_questions):
     # Check if there is an image for this question and display it
     if pd.notna(question_row.get('Image URL')):
         st.image(question_row['Image URL'], caption="Related Image", use_column_width=True)
+
+        # Check if the image URL is correct for debugging purposes
+        st.write(f"Image URL for this question: {question_row['Image URL']}")
 
     # Unique key for each question
     question_key = f"question_{question_number}"
@@ -225,10 +233,17 @@ def display_quiz_review():
 def start_quiz():
     st.header("❄️ :blue[SnowPro Core] Study App",divider="grey")
 
-# --- TEST MODE: Add the QID input for testing specific questions ---
+    st.title("❄️ :blue[SnowPro Core] Study App - Test Mode")
+
+    # --- TEST MODE: Add the QID input for testing specific questions ---
     qid = st.text_input(
         "Enter the QID to test a specific question (for debugging):"
     )
+
+  # Image URL Test (Insert your direct image URL here)
+    test_image_url = 'https://i.imgur.com/0u4Zjc4.jpeg'
+    st.write("Testing Image URL:")
+    st.image(test_image_url, caption="Test Image", use_column_width=True)
 
     # Button to test the specific question by QID
     if st.button("Test Question"):
