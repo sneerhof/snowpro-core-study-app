@@ -21,6 +21,17 @@ def load_data():
 
     return data
 
+# DEBUGGING - Button to clear the cache
+# if st.button("Clear Cache"):
+#     st.cache_data.clear()  # Clear the cache
+#     st.write("Cache cleared. Reload the page to pull updated data.")
+
+# Load the data from the CSV
+questions_df = load_data()
+
+# DEBUGGING - Display the first few rows of the DataFrame for verification
+# st.write(questions_df.head())
+
 questions_df = load_data()
 
 # SECTION 2: Utility Functions
@@ -84,8 +95,8 @@ def display_question(question_row, question_number, total_questions):
     if pd.notna(question_row.get('Image URL')):
         st.image(question_row['Image URL'], caption="Related Image", use_column_width=True)
 
-        # Check if the image URL is correct for debugging purposes
-        st.write(f"Image URL for this question: {question_row['Image URL']}")
+        # DEBUGGING - Check if the image URL is correct for debugging purposes
+        # st.write(f"Image URL for this question: {question_row['Image URL']}")
 
     # Unique key for each question
     question_key = f"question_{question_number}"
@@ -233,37 +244,36 @@ def display_quiz_review():
 def start_quiz():
     st.header("❄️ :blue[SnowPro Core] Study App",divider="grey")
 
-    st.title("❄️ :blue[SnowPro Core] Study App - Test Mode")
+    # DEBUGGING --- TEST MODE: Add the QID input for testing specific questions ---
+    # st.title("❄️ :blue[SnowPro Core] Study App - Test Mode")
+    # qid = st.text_input(
+    #     "Enter the QID to test a specific question (for debugging):"
+    # )
 
-    # --- TEST MODE: Add the QID input for testing specific questions ---
-    qid = st.text_input(
-        "Enter the QID to test a specific question (for debugging):"
-    )
+  # DEBUGGING - Image URL Test (Insert your direct image URL here)
+    # test_image_url = 'https://i.imgur.com/0u4Zjc4.jpeg'
+    # st.write("Testing Image URL:")
+    # st.image(test_image_url, caption="Test Image", use_column_width=True)
 
-  # Image URL Test (Insert your direct image URL here)
-    test_image_url = 'https://i.imgur.com/0u4Zjc4.jpeg'
-    st.write("Testing Image URL:")
-    st.image(test_image_url, caption="Test Image", use_column_width=True)
+    # DEBUGGING - Button to test the specific question by QID
+    # if st.button("Test Question"):
+    #     # Convert QID input to string to handle any type differences
+    #     qid_str = str(qid)
 
-    # Button to test the specific question by QID
-    if st.button("Test Question"):
-        # Convert QID input to string to handle any type differences
-        qid_str = str(qid)
+        # # Ensure QID column is treated as string for comparison
+        # questions_df['QID'] = questions_df['QID'].astype(str)
 
-        # Ensure QID column is treated as string for comparison
-        questions_df['QID'] = questions_df['QID'].astype(str)
+        # # Search for the question in the DataFrame by QID
+        # matching_questions = questions_df[questions_df['QID'] == qid_str]
 
-        # Search for the question in the DataFrame by QID
-        matching_questions = questions_df[questions_df['QID'] == qid_str]
+        # # Check if a matching question was found
+        # if not matching_questions.empty:
+        #     question_row = matching_questions.iloc[0]  # Get the first matching row
+        #     display_question(question_row, question_number=0, total_questions=1)  # Display the question for testing
+        # else:
+        #     st.error("Question not found! Please ensure you entered the correct QID.")
 
-        # Check if a matching question was found
-        if not matching_questions.empty:
-            question_row = matching_questions.iloc[0]  # Get the first matching row
-            display_question(question_row, question_number=0, total_questions=1)  # Display the question for testing
-        else:
-            st.error("Question not found! Please ensure you entered the correct QID.")
-
-        return  # Exit after testing
+        # return  # Exit after testing
 
     # --- REGULAR QUIZ LOGIC FOLLOWS BELOW ---
 
