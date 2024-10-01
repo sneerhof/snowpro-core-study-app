@@ -224,15 +224,19 @@ def display_question(question_row, question_number, total_questions):
         st.button("Restart Quiz", on_click=restart_quiz)
 
 # Function to display the review of the quiz at the end
-def display_quiz_review():
+def display_quiz_review(flagged_only=False):
     if 'quiz_review' in st.session_state and st.session_state['quiz_review']:
         st.write("## Quiz Review")
-        
+
         # Create a DataFrame from the quiz review data
         review_df = pd.DataFrame(st.session_state['quiz_review'])
 
-        # Reorder the columns (removing the 'Question Number' column)
-        review_df = review_df[['Question', 'Flagged', 'Correct?', 'Correct Answer', 'Your Answer', 'Explanation', 'Snowflake Documentation']]
+        # Filter for flagged questions only if flagged_only is True
+        if flagged_only:
+            review_df = review_df[review_df['Flagged'] == True]
+
+        # Reorder the columns to include 'Flagged'
+        review_df = review_df[['Question', 'Correct?', 'Correct Answer', 'Your Answer', 'Explanation', 'Snowflake Documentation', 'Flagged']]
 
         # Replace the 'Snowflake Documentation' column with the full URLs, removing the "Snowflake Documentation(1)" text
         review_df['Snowflake Documentation'] = review_df['Snowflake Documentation'].apply(lambda doc: ', '.join(re.findall(r'\((https?://[^\)]+)\)', doc)))
@@ -343,12 +347,18 @@ def start_quiz():
             st.write(f"**Your Score:** {st.session_state['score']} out of {answered_questions} questions answered (Total exam: {total_selected_questions})")
             st.write(f"**Percentage:** {percentage:.2f}%")
             
+            # Buttons to review flagged or all questions
+            if st.button("Review Flagged Questions"):
+                display_quiz_review(flagged_only=True)
+
+            if st.button("Review All Questions"):
+                display_quiz_review(flagged_only=False)
+
+
             # Button to restart the quiz
             st.button("Restart Quiz", on_click=restart_quiz)
             
-            # Button to review the quiz
-            if st.button("Review Quiz"):
-                display_quiz_review()
+
 
 # Run the quiz app
 if __name__ == '__main__':
