@@ -84,9 +84,15 @@ def start_quiz_callback():
     st.session_state['selected_questions'] = questions_df.sample(n=int(num_questions)).reset_index(drop=True)
 
 # SECTION 3: Display Questions
+# Function to display a single question with optional image and navigation
+# Callback function to move to the next question
+def next_question_callback():
+    st.session_state['current_question'] += 1
 
-# Function to display a single question
-# Function to display a single question with optional image
+# Callback function to go to the previous question
+def previous_question_callback():
+    st.session_state['current_question'] -= 1
+
 def display_question(question_row, question_number, total_questions):
     st.write(f"### Question {question_number + 1} of {total_questions}")
     st.write(question_row['QUESTION'])
@@ -94,9 +100,6 @@ def display_question(question_row, question_number, total_questions):
     # Check if there is an image for this question and display it
     if pd.notna(question_row.get('Image URL')):
         st.image(question_row['Image URL'], caption="Related Image", use_column_width=True)
-
-        # DEBUGGING - Check if the image URL is correct for debugging purposes
-        # st.write(f"Image URL for this question: {question_row['Image URL']}")
 
     # Unique key for each question
     question_key = f"question_{question_number}"
@@ -114,19 +117,47 @@ def display_question(question_row, question_number, total_questions):
             'submitted': False,
             'answered_correctly': False,
             'selected_options': None,
-            'flagged': False  # Add flagging state
+            'flagged': False  # Default value for flagging
         }
-    
-     # Flag checkbox
-    st.session_state[question_key]['flagged'] = st.checkbox("Flag this question", key=f"flag_{question_number}")
 
-    # Display answer options only if the question hasn't been submitted yet
-    if not st.session_state[question_key]['submitted']:
-        if num_correct > 1:
-            st.write(f"*(Select {num_correct} answers)*")
+    # Flag checkbox, with immediate state update
+    flag_status = st.checkbox(
+        "Flag this question",
+        value=st.session_state[question_key]['flagged'],  # Persist the state
+        key=f"flag_{question_number}"
+    )
+    st.session_state[question_key]['flagged'] = flag_status  # Update flag state immediately
+
+    # Ensure the quiz review is updated with the latest flag status
+    update_quiz_review(question_row, question_key, correct_answers)
+
+    # Display answer options (disable after submission)
+    selected_options = []
+    if num_correct > 1:
+        st.write(f"*(Select {num_correct} answers)*")
+        if st.session_state[question_key]['submitted']:
+            # Show the previously selected options but disable editing
+            st.multiselect(
+                "Your Answer:",
+                options,
+                default=st.session_state[question_key]['selected_options'],
+                disabled=True,  # Disable input after submission
+                key=f"{question_key}_selected"
+            )
+        else:
             selected_options = st.multiselect(
                 "Your Answer:",
                 options,
+                key=f"{question_key}_selected"
+            )
+    else:
+        if st.session_state[question_key]['submitted']:
+            # Show the previously selected option but disable editing
+            st.radio(
+                "Your Answer:",
+                options,
+                index=options.index(st.session_state[question_key]['selected_options'][0]) if st.session_state[question_key]['selected_options'] else None,
+                disabled=True,  # Disable input after submission
                 key=f"{question_key}_selected"
             )
         else:
@@ -138,57 +169,37 @@ def display_question(question_row, question_number, total_questions):
             )
             selected_options = [selected_option] if selected_option else []
 
-        # 'Submit' button
+    # 'Submit' button should only be shown if the answer has not yet been submitted
+    if not st.session_state[question_key]['submitted']:
         if st.button("Submit", key=f"submit_{question_number}"):
+            # Ensure the correct number of options are selected for multi-answer questions
             if len(selected_options) != num_correct:
                 st.warning(f"Please select exactly {num_correct} option(s).")
             else:
                 st.session_state[question_key]['submitted'] = True
-                st.session_state['answered_questions'] += 1  # Increment the count of answered questions
                 st.session_state[question_key]['selected_options'] = selected_options
 
                 # Check if the answer is correct
                 if set(selected_options) == set(correct_answers):
                     st.session_state['score'] += 1
                     st.session_state[question_key]['answered_correctly'] = True
-                    st.success("Correct!")
                 else:
-                    st.error(f"Incorrect! The correct answer(s): {', '.join(correct_answers)}")
+                    st.session_state[question_key]['answered_correctly'] = False
 
-                # Display explanation and documentation immediately after submitting
-                if pd.notna(question_row['EXPLANATION/NOTES']):
-                    st.info(f"**Explanation:** {question_row['EXPLANATION/NOTES']}")
-                
-                # Handle multiple Snowflake documentation links
-                if pd.notna(question_row['Snowflake Documentation']):
-                    doc_links = display_snowflake_docs(question_row['Snowflake Documentation'])
-                    for link in doc_links:
-                        st.write(link)
+                # Increment answered questions count
+                st.session_state['answered_questions'] += 1
 
-                # Add this question's data to review list
-                if 'quiz_review' not in st.session_state:
-                    st.session_state['quiz_review'] = []
-                
-                st.session_state['quiz_review'].append({
-                    'Question': question_row['QUESTION'],
-                    'Your Answer': ', '.join(selected_options),
-                    'Correct Answer': ', '.join(correct_answers),
-                    'Correct?': 'Yes' if set(selected_options) == set(correct_answers) else 'No',
-                    'Explanation': question_row['EXPLANATION/NOTES'] if pd.notna(question_row['EXPLANATION/NOTES']) else 'N/A',
-                    'Snowflake Documentation': ', '.join(display_snowflake_docs(question_row['Snowflake Documentation'])),
-                    'Flagged': st.session_state[question_key]['flagged']  # Add flagged status to review
-                })
+                # Update the quiz review after submission
+                update_quiz_review(question_row, question_key, correct_answers)
 
-# SECTION 4: Display Navigation Buttons and Review Table
-
-    else:
-        # Display feedback if already submitted
+    # Show feedback and explanation after submission
+    if st.session_state[question_key]['submitted']:
         if st.session_state[question_key]['answered_correctly']:
             st.success("Correct!")
         else:
             st.error(f"Incorrect! The correct answer(s): {', '.join(correct_answers)}")
 
-        # Display explanation and documentation
+        # Show explanation and documentation
         if pd.notna(question_row['EXPLANATION/NOTES']):
             st.info(f"**Explanation:** {question_row['EXPLANATION/NOTES']}")
 
@@ -197,31 +208,47 @@ def display_question(question_row, question_number, total_questions):
             for link in doc_links:
                 st.write(link)
 
-        # Add this question's data to review list (if not already added)
-        if 'quiz_review' not in st.session_state:
-            st.session_state['quiz_review'] = []
-        
-        if question_key not in [q['Question'] for q in st.session_state['quiz_review']]:
-            st.session_state['quiz_review'].append({
-                'Question': question_row['QUESTION'],
-                'Your Answer': ', '.join(st.session_state[question_key]['selected_options']),
-                'Correct Answer': ', '.join(correct_answers),
-                'Correct?': 'Yes' if st.session_state[question_key]['answered_correctly'] else 'No',
-                'Explanation': question_row['EXPLANATION/NOTES'] if pd.notna(question_row['EXPLANATION/NOTES']) else 'N/A',
-                'Snowflake Documentation': ', '.join(display_snowflake_docs(question_row['Snowflake Documentation']))
-            })
+    # Navigation buttons: Previous is always visible
+    col1, col2 = st.columns([1, 1])
 
-    # Show the 'Next' button after feedback and explanation
-    if st.session_state[question_key]['submitted']:
-        st.button("Next", key=f"next_{question_number}", on_click=next_question)
+    # Previous button: Go back to the previous question (always visible)
+    if question_number > 0:
+        with col1:
+            st.button("Previous", key=f"previous_{question_number}", on_click=previous_question_callback)
 
-    # Navigation buttons
-    st.write("---")
-    col1, col2 = st.columns(2)
-    with col1:
-        st.button("Exit and View Score", on_click=exit_quiz)
-    with col2:
-        st.button("Restart Quiz", on_click=restart_quiz)
+    # Handle the last question
+    if question_number == total_questions - 1:
+        if st.session_state[question_key]['submitted']:
+            with col2:
+                st.button("Exit and View Score", key=f"exit_{question_number}", on_click=exit_quiz)
+    else:
+        # Next button: Move to the next question (visible only after submission)
+        if st.session_state[question_key]['submitted']:
+            with col2:
+                st.button("Next", key=f"next_{question_number}", on_click=next_question_callback)
+
+
+# Function to update the quiz review list
+def update_quiz_review(question_row, question_key, correct_answers):
+    """Update the quiz review with the current question's data."""
+    if 'quiz_review' not in st.session_state:
+        st.session_state['quiz_review'] = []
+
+    # Remove the existing entry for this question if it exists
+    st.session_state['quiz_review'] = [
+        q for q in st.session_state['quiz_review'] if q['Question'] != question_row['QUESTION']
+    ]
+
+    # Add the updated entry
+    st.session_state['quiz_review'].append({
+        'Question': question_row['QUESTION'],
+        'Your Answer': ', '.join(st.session_state[question_key]['selected_options']) if st.session_state[question_key]['selected_options'] else 'N/A',
+        'Correct Answer': ', '.join(correct_answers),
+        'Correct?': 'Yes' if st.session_state[question_key]['answered_correctly'] else 'No',
+        'Explanation': question_row['EXPLANATION/NOTES'] if pd.notna(question_row['EXPLANATION/NOTES']) else 'N/A',
+        'Snowflake Documentation': ', '.join(display_snowflake_docs(question_row['Snowflake Documentation'])),
+        'Flagged': st.session_state[question_key]['flagged']  # Store the current flagged status
+    })
 
 # Function to display the review of the quiz at the end
 def display_quiz_review(flagged_only=False):
@@ -236,7 +263,7 @@ def display_quiz_review(flagged_only=False):
             review_df = review_df[review_df['Flagged'] == True]
 
         # Reorder the columns to include 'Flagged'
-        review_df = review_df[['Question', 'Correct?', 'Correct Answer', 'Your Answer', 'Explanation', 'Snowflake Documentation', 'Flagged']]
+        review_df = review_df[['Question', 'Flagged','Correct?', 'Correct Answer', 'Your Answer', 'Explanation', 'Snowflake Documentation']]
 
         # Replace the 'Snowflake Documentation' column with the full URLs, removing the "Snowflake Documentation(1)" text
         review_df['Snowflake Documentation'] = review_df['Snowflake Documentation'].apply(lambda doc: ', '.join(re.findall(r'\((https?://[^\)]+)\)', doc)))
@@ -244,11 +271,10 @@ def display_quiz_review(flagged_only=False):
         # Shift the index to start at 1 instead of 0
         review_df.index += 1
 
-        # Display the DataFrame with st.write() (this avoids the index column being displayed explicitly)
+        # Display the DataFrame with st.write()
         st.write(review_df)
 
 # SECTION 5: Main Quiz Logic and Final Output
-
 # Function to start the quiz interface
 def start_quiz():
     st.header("❄️ :blue[SnowPro Core] Study App",divider="grey")
@@ -332,6 +358,17 @@ def start_quiz():
             question_row = st.session_state['selected_questions'].iloc[current_q]
             display_question(question_row, current_q, total_questions)
             st.progress((current_q + 1) / total_questions)
+
+             # Always display the "Restart Quiz" and "Exit and View Score" buttons
+            st.write("---")
+            col1, col2 = st.columns(2)
+
+            with col1:
+                if not (current_q == total_questions - 1 and st.session_state.get(f'question_{current_q}') and st.session_state[f'question_{current_q}']['submitted']):
+                    st.button("Exit and View Score", on_click=exit_quiz)
+            with col2:
+                st.button("Restart Quiz", on_click=restart_quiz)
+
         else:
             answered_questions = st.session_state['answered_questions']
             total_selected_questions = st.session_state['num_questions']
@@ -354,7 +391,6 @@ def start_quiz():
             if st.button("Review All Questions"):
                 display_quiz_review(flagged_only=False)
 
-
             # Button to restart the quiz
             st.button("Restart Quiz", on_click=restart_quiz)
             
@@ -364,3 +400,7 @@ def start_quiz():
 if __name__ == '__main__':
     start_quiz()
 
+
+
+ #  DEBUGGING - Check if the image URL is correct for debugging purposes
+        # st.write(f"Image URL for this question: {question_row['Image URL']}")
