@@ -113,8 +113,12 @@ def display_question(question_row, question_number, total_questions):
         st.session_state[question_key] = {
             'submitted': False,
             'answered_correctly': False,
-            'selected_options': None
+            'selected_options': None,
+            'flagged': False  # Add flagging state
         }
+    
+     # Flag checkbox
+    st.session_state[question_key]['flagged'] = st.checkbox("Flag this question", key=f"flag_{question_number}")
 
     # Display answer options only if the question hasn't been submitted yet
     if not st.session_state[question_key]['submitted']:
@@ -171,7 +175,8 @@ def display_question(question_row, question_number, total_questions):
                     'Correct Answer': ', '.join(correct_answers),
                     'Correct?': 'Yes' if set(selected_options) == set(correct_answers) else 'No',
                     'Explanation': question_row['EXPLANATION/NOTES'] if pd.notna(question_row['EXPLANATION/NOTES']) else 'N/A',
-                    'Snowflake Documentation': ', '.join(display_snowflake_docs(question_row['Snowflake Documentation']))
+                    'Snowflake Documentation': ', '.join(display_snowflake_docs(question_row['Snowflake Documentation'])),
+                    'Flagged': st.session_state[question_key]['flagged']  # Add flagged status to review
                 })
 
 # SECTION 4: Display Navigation Buttons and Review Table
@@ -227,7 +232,7 @@ def display_quiz_review():
         review_df = pd.DataFrame(st.session_state['quiz_review'])
 
         # Reorder the columns (removing the 'Question Number' column)
-        review_df = review_df[['Question', 'Correct?', 'Correct Answer', 'Your Answer', 'Explanation', 'Snowflake Documentation']]
+        review_df = review_df[['Question', 'Flagged', 'Correct?', 'Correct Answer', 'Your Answer', 'Explanation', 'Snowflake Documentation']]
 
         # Replace the 'Snowflake Documentation' column with the full URLs, removing the "Snowflake Documentation(1)" text
         review_df['Snowflake Documentation'] = review_df['Snowflake Documentation'].apply(lambda doc: ', '.join(re.findall(r'\((https?://[^\)]+)\)', doc)))
