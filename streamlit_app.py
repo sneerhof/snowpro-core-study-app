@@ -21,7 +21,7 @@ def load_data():
 
     return data
 
-# DEBUGGING - Button to clear the cache
+# CLEAR CACHE - Button to clear the cache
 # if st.button("Clear Cache"):
 #     st.cache_data.clear()  # Clear the cache
 #     st.write("Cache cleared. Reload the page to pull updated data.")
@@ -84,7 +84,6 @@ def start_quiz_callback():
     st.session_state['selected_questions'] = questions_df.sample(n=int(num_questions)).reset_index(drop=True)
 
 # SECTION 3: Display Questions
-# Function to display a single question with optional image and navigation
 # Callback function to move to the next question
 def next_question_callback():
     st.session_state['current_question'] += 1
@@ -93,6 +92,7 @@ def next_question_callback():
 def previous_question_callback():
     st.session_state['current_question'] -= 1
 
+# Function to display a single question with optional image and navigation
 def display_question(question_row, question_number, total_questions):
     st.write(f"### Question {question_number + 1} of {total_questions}")
     st.write(question_row['QUESTION'])
@@ -195,13 +195,20 @@ def display_question(question_row, question_number, total_questions):
     # Show feedback and explanation after submission
     if st.session_state[question_key]['submitted']:
         if st.session_state[question_key]['answered_correctly']:
-            st.success("Correct!")
+            st.success("Correct!",icon="✅")
         else:
-            st.error(f"Incorrect! The correct answer(s): {', '.join(correct_answers)}")
+            st.error(f"Incorrect! The correct answer(s): {', '.join(correct_answers)}",icon="❌")
 
-        # Show explanation and documentation
+
+    # Show explanation and documentation
         if pd.notna(question_row['EXPLANATION/NOTES']):
-            st.info(f"**Explanation:** {question_row['EXPLANATION/NOTES']}")
+            explanation = question_row['EXPLANATION/NOTES'].replace('\\n', '\n')  # Ensure line breaks are preserved
+            st.markdown(f"""
+                <div style="background-color: #34495e; padding: 10px; border-radius: 5px;">
+                    <strong>Explanation/Notes:</strong><br>
+                    {explanation}
+                </div>
+                """, unsafe_allow_html=True)  # Use custom HTML for the colored box
 
         if pd.notna(question_row['Snowflake Documentation']):
             doc_links = display_snowflake_docs(question_row['Snowflake Documentation'])
