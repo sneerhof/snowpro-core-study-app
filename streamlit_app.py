@@ -13,7 +13,7 @@ st.set_page_config(
 # Load questions from CSV
 @st.cache_data
 def load_data():
-    file_path = 'all_questions - Sheet1.csv'  # Updated file path
+    file_path = 'all_questions - Sheet1.csv'  # Relative file path
     data = pd.read_csv(file_path)
 
     # Ensure QID column is treated as string
@@ -302,20 +302,20 @@ def start_quiz():
     #     # Convert QID input to string to handle any type differences
     #     qid_str = str(qid)
 
-        # # Ensure QID column is treated as string for comparison
-        # questions_df['QID'] = questions_df['QID'].astype(str)
+    #     # Ensure QID column is treated as string for comparison
+    #     questions_df['QID'] = questions_df['QID'].astype(str)
 
-        # # Search for the question in the DataFrame by QID
-        # matching_questions = questions_df[questions_df['QID'] == qid_str]
+    #     # Search for the question in the DataFrame by QID
+    #     matching_questions = questions_df[questions_df['QID'] == qid_str]
 
-        # # Check if a matching question was found
-        # if not matching_questions.empty:
-        #     question_row = matching_questions.iloc[0]  # Get the first matching row
-        #     display_question(question_row, question_number=0, total_questions=1)  # Display the question for testing
-        # else:
-        #     st.error("Question not found! Please ensure you entered the correct QID.")
+    #     # Check if a matching question was found
+    #     if not matching_questions.empty:
+    #         question_row = matching_questions.iloc[0]  # Get the first matching row
+    #         display_question(question_row, question_number=0, total_questions=1)  # Display the question for testing
+    #     else:
+    #         st.error("Question not found! Please ensure you entered the correct QID.")
 
-        # return  # Exit after testing
+    #     return  # Exit after testing
 
     # --- REGULAR QUIZ LOGIC FOLLOWS BELOW ---
 

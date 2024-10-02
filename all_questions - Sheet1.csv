@@ -666,7 +666,7 @@ High availability is achieved by leveraging multiple availability zones (eg.data
 
 What will occur?",A,"No virtual warehouse will be used, data will be read from the result cache.","No virtual warehouse will be used, data will be read from the local disk cache.",The default virtual warehouse will be used to read all data.,The virtual warehouse that is defined at the session level will be used to read all data.,,,"Same query, same data, less than 24h since last run → Query Result Cache",https://docs.snowflake.com/en/user-guide/querying-persisted-results#retrieval-optimization,
 235,How long is the Fail-safe period for temporary and transient tables?,A,There is no Fail-safe period for these tables.,1 day,7 days,31 days,90 days,,,"https://docs.snowflake.com/user-guide/data-cdp-storage-costs#temporary-and-transient-tables, https://docs.snowflake.com/en/user-guide/tables-temp-transient.html",
-236,Using variables in Snowflake is denoted by using which SQL character?,C,@,&,$,#,,,"To distinguish variables from bind values and column names, all variables must be prefixed with a $ sign\n
+236,Using variables in Snowflake is denoted by using which SQL character?,C,@,&,$,"#",,,"To distinguish variables from bind values and column names, all variables must be prefixed with a $ sign\n
 
 Example:\n
 SET (MIN, MAX)=(40, 70);\n
