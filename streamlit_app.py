@@ -22,9 +22,9 @@ def load_data():
     return data
 
 # CLEAR CACHE - Button to clear the cache
-if st.button("Clear Cache"):
-    st.cache_data.clear()  # Clear the cache
-    st.write("Cache cleared. Reload the page to pull updated data.")
+# if st.button("Clear Cache"):
+#     st.cache_data.clear()  # Clear the cache
+#     st.write("Cache cleared. Reload the page to pull updated data.")
 
 # Load the data from the CSV
 questions_df = load_data()
