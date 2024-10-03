@@ -336,7 +336,7 @@ def start_quiz():
     if not st.session_state['quiz_started']:
         # Display instructions
         st.markdown("""
-            *Welcome to the SnowPro Core Study App! Review key concepts by building a quiz from a bank of over 400 practice questions. Check out the instructions below and :rainbow[happy studying!]*
+            *Welcome to the SnowPro Core Study App! Review key concepts by building a quiz from a bank of over 1000 practice questions. Check out the instructions below and :rainbow[happy studying!]*
             ### Instructions:
             1. Input the number of questions you want to be quizzed on (max 400).
             2. Make your answer selection then click :blue[**[Submit]**]. 
@@ -354,7 +354,7 @@ def start_quiz():
             min_value=1,
             max_value=len(questions_df),
             value=100,
-            help="Maximum 400 questions"
+            help="Maximum 1010 questions"
         )
 
         # Start Quiz button
