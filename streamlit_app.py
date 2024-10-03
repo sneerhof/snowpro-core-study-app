@@ -203,10 +203,12 @@ def display_question(question_row, question_number, total_questions):
     # Show explanation and documentation
         if pd.notna(question_row['EXPLANATION/NOTES']):
             explanation = question_row['EXPLANATION/NOTES'].replace('\\n', '\n')  # Ensure line breaks are preserved
+            topic = question_row['Topic(s)'] if pd.notna(question_row['Topic(s)']) else "N/A"  # Fetch the Topic(s)
             st.markdown(f"""
                 <div style="background-color: #34495e; padding: 10px; border-radius: 5px;">
                     <strong>Explanation/Notes:</strong><br>
-                    {explanation}
+                    {explanation}<br><br>
+                    <strong>Exam Domains(s):</strong> {topic}
                 </div>
                 """, unsafe_allow_html=True)  # Use custom HTML for the colored box
 
@@ -254,7 +256,8 @@ def update_quiz_review(question_row, question_key, correct_answers):
         'Correct?': 'Yes' if st.session_state[question_key]['answered_correctly'] else 'No',
         'Explanation': question_row['EXPLANATION/NOTES'] if pd.notna(question_row['EXPLANATION/NOTES']) else 'N/A',
         'Snowflake Documentation': ', '.join(display_snowflake_docs(question_row['Snowflake Documentation'])),
-        'Flagged': st.session_state[question_key]['flagged']  # Store the current flagged status
+        'Flagged': st.session_state[question_key]['flagged'],  # Store the current flagged status
+        'Exam Domain(s)': question_row['Topic(s)'] if pd.notna(question_row['Topic(s)']) else 'N/A'  # Store the topic
     })
 
 # Function to display the review of the quiz at the end
@@ -270,7 +273,7 @@ def display_quiz_review(flagged_only=False):
             review_df = review_df[review_df['Flagged'] == True]
 
         # Reorder the columns to include 'Flagged'
-        review_df = review_df[['Question', 'Flagged','Correct?', 'Correct Answer', 'Your Answer', 'Explanation', 'Snowflake Documentation']]
+        review_df = review_df[['Question', 'Flagged','Correct?', 'Correct Answer', 'Your Answer', 'Explanation', 'Snowflake Documentation','Exam Domain(s)']]
 
         # Replace the 'Snowflake Documentation' column with the full URLs, removing the "Snowflake Documentation(1)" text
         review_df['Snowflake Documentation'] = review_df['Snowflake Documentation'].apply(lambda doc: ', '.join(re.findall(r'\((https?://[^\)]+)\)', doc)))
