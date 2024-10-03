@@ -287,7 +287,7 @@ def display_quiz_review(flagged_only=False):
 # SECTION 5: Main Quiz Logic and Final Output
 # Function to start the quiz interface
 def start_quiz():
-    st.header("❄️ :blue[SnowPro Core] Study App",divider="grey")
+    st.header(":grey[[beta]] ❄️ :blue[SnowPro Core] Study App",divider="grey")
 
     # DEBUGGING --- TEST MODE: Add the QID input for testing specific questions ---
     # st.title("❄️ :blue[SnowPro Core] Study App - Test Mode")
@@ -336,7 +336,7 @@ def start_quiz():
     if not st.session_state['quiz_started']:
         # Display instructions
         st.markdown("""
-            *Welcome to the SnowPro Core Study App! Review key concepts by building a quiz from a bank of over 1000 practice questions. Check out the instructions below and :rainbow[happy studying!]*
+            *Welcome to the [beta] SnowPro Core Study App! Review key concepts by building a quiz from a bank of over 1000 practice questions. Check out the instructions below and :rainbow[happy studying!]*
             ### Instructions:
             1. Input the number of questions you want to be quizzed on (max 400).
             2. Make your answer selection then click :blue[**[Submit]**]. 
@@ -346,7 +346,7 @@ def start_quiz():
             6. Once the quiz ends (either via :blue[**[Exit and View Score]**] or by completing all questions), click :blue[**[Review Quiz]**] to review all the questions and your responses in a table that you can even download to a .csv! (Use this to keep track of concepts and Snowflake Documentation that would be helpful to review)
             7. Use :blue[**[Restart Quiz]**] to **reset** the quiz. :blue-background[Note: You will not get a score or an ability to review the questions when using :blue[**[Restart Quiz]**].]
         """)
-        st.markdown("""Lastly, mistakes happen, if you find a bug in the quiz or an inconsistency in a question/answer, please flag those and share feedback via the app's GitHub repository.""")
+        st.markdown("""Lastly, mistakes happen, if you find a bug in the quiz or an inconsistency in a question/answer, please flag those and share feedback directly or via the app's GitHub repository.""")
 
         # Input for selecting the number of questions
         st.session_state['num_questions'] = st.number_input(
@@ -378,6 +378,7 @@ def start_quiz():
                     st.button("Exit and View Score", on_click=exit_quiz)
             with col2:
                 st.button("Restart Quiz", on_click=restart_quiz)
+                st.markdown("⚠️  :grey[In beta, please share feedback!]")
 
         else:
             answered_questions = st.session_state['answered_questions']
