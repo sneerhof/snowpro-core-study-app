@@ -338,7 +338,7 @@ def start_quiz():
         st.markdown("""
             *Welcome to the [beta] SnowPro Core Study App! Review key concepts by building a quiz from a bank of over 1000 practice questions. Check out the instructions below and :rainbow[happy studying!]*
             ### Instructions:
-            1. Input the number of questions you want to be quizzed on (max 400).
+            1. Input the number of questions you want to be quizzed on (max 1010).
             2. Make your answer selection then click :blue[**[Submit]**]. 
             3. After each question you will see if you answered correctly or not, as well as the explanation and link(s) to relevant Snowflake Documentation.
             4. Click :blue[**[Next]**] to move to the next question.
