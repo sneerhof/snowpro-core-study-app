@@ -120,6 +120,7 @@ Which of the following statements will return the required information?",D,"SELE
 **Concept included in test from Sept 2024",https://docs.snowflake.com/en/user-guide/ui-snowsight-activity#label-snowsight-query-profile-reference,,3.0 Performance Concepts (15%)
 45,User-level network policies can be created by which of the following roles? (Choose two.),"B,D",ROLEADMIN,ACCOUNTADMIN,SYSADMIN,SECURITYADMIN,USERADMIN,,,https://docs.snowflake.com/en/user-guide/network-policies#create-a-network-policy,,2.0 Account Access and Security (20%)
 46,"A user has 10 files in a stage containing new customer data. The ingest operation completes with no errors, using the following command: 
+
     COPY INTO my_table FROM @my_stage; 
 
 The next day the user adds 10 files to the stage so that now the stage contains a mixture of new customer data and updates to the previous data. The user did not remove the 10 original files. 
@@ -241,7 +242,8 @@ When you create a custom role, it is a best practice to immediately grant that r
 93,Which of the following commands cannot be used within a reader account?,A,CREATE SHARE,ALTER WAREHOUSE,DROP ROLE,SHOW SCHEMAS,DESCRIBE TABLE,,"A reader account is a special type of user account that has read-only access to data in Snowflake. This means that reader accounts can only perform actions that are related to querying data, such as running SELECT statements and viewing metadata.\n
 
 As a result, reader accounts cannot perform actions that modify the data or metadata stored in Snowflake, such as creating new objects, modifying existing objects, or dropping objects. This includes the CREATE SHARE command, which is used to create a new share and make it available to other users.",https://docs.snowflake.com/en/user-guide/data-sharing-reader-create,,6.0 Data Protection and Data Sharing (10%)
-94,"A sales table, fct_sales, has 100 million records. The following query was executed: 
+94,"A sales table, fct_sales, has 100 million records. The following query was executed:
+ 
     SELECT COUNT (1) FROM fct_sales; 
 
 How did Snowflake fulfill this query?",D,Query against the result set cache,Query against a virtual warehouse cache,Query against the most-recently created micro-partition,Query against the metadata cache,,,"Metadata of Micro-Partitions:\n
@@ -364,10 +366,11 @@ How can this be accomplished?",B,"Use Time Travel, as long as DATA_RETENTION_TIM
 134,Users are responsible for data storage costs until what occurs?,B,Data expires from Time Travel,Data expires from Fail-safe,Data is deleted from a table,Data is truncated from a table,,,"Storage is calculated and charged for data regardless of whether it is in the Active, Time Travel, or Fail-safe state. Because these life-cycle states are sequential, updated/deleted data protected by CDP will continue to incur storage costs until the data leaves the Fail-safe state.","https://docs.snowflake.com/en/user-guide/data-cdp-storage-costs, https://docs.snowflake.com/en/user-guide/tables-storage-considerations",,6.0 Data Protection and Data Sharing (10%)
 135,What is the minimum Snowflake edition required for row level security?,B,Standard,Enterprise,Business Critical,Virtual Private Snowflake,,,,https://docs.snowflake.com/en/user-guide/intro-editions#security-governance-and-data-protection,,1.0 Snowflake AI Data Cloud Features and Architecture (25%)
 136,"A single user of a virtual warehouse has set the warehouse to auto-resume and auto-suspend after 10 minutes. The warehouse is currently suspended and the user performs the following actions: 
-1. Runs a query that takes 3 minutes to complete 
-2. Leaves for 15 minutes 
-3. Returns and runs a query that takes 10 seconds to complete 
-4. Manually suspends the warehouse as soon as the last query was completed 
+
+  1. Runs a query that takes 3 minutes to complete 
+  2. Leaves for 15 minutes 
+  3. Returns and runs a query that takes 10 seconds to complete 
+  4. Manually suspends the warehouse as soon as the last query was completed 
 
 When the user returns, how much billable compute time will have been consumed?",C,4 minutes,10 minutes,14 minutes,24 minutes,,,"3 Min\n
 10 Min (after 10 Min VWH gets auto-suspended)\n
@@ -474,12 +477,12 @@ Snowflake stores metadata about all rows stored in a micro-partition, including:
 165,Where can a user find and review the failed logins of a specific user for the past 30 days?,B,The USERS view in ACCOUNT_USAGE,The LOGIN_HISTORY view in ACCOUNT_USAGE,The ACCESS_HISTORY view in ACCOUNT_USAGE,The SESSIONS view in ACCOUNT_USAGE,,,**Concept included in test from Sept 2024,https://docs.snowflake.com/en/sql-reference/account-usage/login_history,,2.0 Account Access and Security (20%)
 166,"A virtual warehouse is created using the following command: 
 
-    Create warehouse my_WH with 
-    warehouse_size = MEDIUM 
-    min_cluster_count = 1 
-    max_cluster_count = 1 
-    auto_suspend = 60 
-    auto_resume = true; 
+    CREATE WAREHOUSE my_wh WITH 
+    WAREHOUSE_SIZE = MEDIUM 
+    MIN_CLUSTER_COUNT = 1 
+    MAX_CLUSTER_COUNT = 1 
+    AUTO_SUSPEND = 60 
+    AUTO_RESUME = TRUE; 
 
 The image below is a graphical representation of the warehouse utilization across two days. 
 
@@ -559,7 +562,7 @@ A task can execute any one of the following types of SQL code:\n
 How can this worksheet be shared?",C,Create a zero-copy clone of the worksheet and grant permissions to teammates,Create a private Data Exchange so that any teammate can use the worksheet,Share the worksheet with teammates within Snowsight,Create a database and grant all permissions to teammates,,,https://www.awesomescreenshot.com/video/16252655?key=2158cb91f2d67c71b92c91da3e08f596,https://docs.snowflake.com/en/user-guide/ui-snowsight-worksheets#label-sharing-worksheets-and-folders,,1.0 Snowflake AI Data Cloud Features and Architecture (25%)
 187,"What is the following SQL command used for? 
 
-    Select * from table(validate(t1, job_id => '_last*));",D,To validate external table files in table t1 across all sessions,To validate task SQL statements against table t1 in the last 14 days,To validate a file for errors before it gets executed using a COPY command,To return errors from the last executed COPY command into table t1 in the current session,,,"-Validate returns errors from a previously executed COPY command\n
+    SELECT * FROM TABLE(VALIDATE(t1, JOB_ID => '_last*));",D,To validate external table files in table t1 across all sessions,To validate task SQL statements against table t1 in the last 14 days,To validate a file for errors before it gets executed using a COPY command,To return errors from the last executed COPY command into table t1 in the current session,,,"-Validate returns errors from a previously executed COPY command\n
 -COPY INTO with VALIDATION_MODE parameter checks for errors previous to actually loading the data\n
 -VALIDATION_MODE = RETURN_n_ROWS | RETURN_ERRORS | RETURN_ALL_ERROR\n",https://docs.snowflake.com/en/sql-reference/functions/validate,,4.0 Data Loading and Unloading (10%)
 188,Which command should be used to download files from a Snowflake stage to a local folder on a client's machine?,B,PUT,GET,COPY,SELECT,,,**Concept included in test from Sept 2024,https://docs.snowflake.com/en/sql-reference/sql/get,,4.0 Data Loading and Unloading (10%)
@@ -638,10 +641,11 @@ Option A user must set USE_METADATA_CACHE to TRUE to use the metadata cache in q
 SELECT.. FROM.. WHERE < column_value> IN (...) (in predicate)\n
 Keyword ""selective""\n
 **Concept included in test from Sept 2024",https://docs.snowflake.com/en/user-guide/search-optimization-service,,3.0 Performance Concepts (15%)
-222,"A data provider wants to share data with a consumer who does not have a Snowflake account. The provider creates a reader account for the consumer following these steps: 
-1. Created a user called ""CONSUMER""
-2. Created a database to hold the share and an extra-small warehouse to query the data
-3. Granted the role PUBLIC the following privileges: Usage on the warehouse, database, and schema, and SELECT on all the objects in the share 
+222,"A data provider wants to share data with a consumer who does not have a Snowflake account. The provider creates a reader account for the consumer following these steps:
+ 
+  1. Created a user called ""CONSUMER""
+  2. Created a database to hold the share and an extra-small warehouse to query the data
+  3. Granted the role PUBLIC the following privileges: Usage on the warehouse, database, and schema, and SELECT on all the objects in the share 
 
 Based on this configuration what is true of the reader account?",B,The reader account will automatically use the Standard edition of Snowflake,The reader account compute will be billed to the provider account,"The reader account can clone data the provider has shared, but cannot re-share it",The reader account can create a copy of the shared data using CREATE TABLE AS <...>,,,"Compute and storage will be billed to the provider, as the reader account is not a Snowflake customer",https://docs.snowflake.com/en/user-guide/data-sharing-reader-create,,6.0 Data Protection and Data Sharing (10%)
 223,Which commands should be used to grant the privilege allowing a role to select data from all current tables and any tables that will be created later in a schema? (Choose two.),"C,D",grant USAGE on all tables in schema DB1.SCHEMA to role MYROLE;,grant USAGE on future tables in schema DB1.SCHEMA to role MYROLE;,grant SELECT on all tables in schema DB1.SCHEMA to role MYROLE;,grant SELECT on future tables in schema DB1.SCHEMA to role MYROLE;,grant SELECT on all tables in database DB1 to role MYROLE;,grant SELECT on future tables in database DB1 to role MYROLE;,,https://docs.snowflake.com/en/sql-reference/sql/grant-privilege#roles,,2.0 Account Access and Security (20%)
@@ -772,7 +776,7 @@ PUT file:///tmp/data/mydata.csv @my_int_stage OVERWRITE=TRUE;",https://docs.snow
 268,Where can we see the amount of storage used by Snowflake's Fail-Safe functionality in the User Interface?,C,In the Account & Billing section,In the Account & Sessions section,In the Admin & Cost Management section,In the Admin & Fail-Safe section,,,"You can see the Fail-Safe usage in Snowsight by navigating to Admin > Cost Management > Consumption and filter the ""Usage Type"" by Storage",https://docs.snowflake.com/en/user-guide/data-failsafe#view-fail-safe-storage-for-your-account,,1.0 Snowflake AI Data Cloud Features and Architecture (25%)
 269,Which of the following are options when creating a Virtual Warehouse? (Choose two.),"A,F",Auto-resume,Auto-disable,Auto-enable,Auto-resize,Auto-drop,Auto-suspend,,https://docs.snowflake.com/en/sql-reference/sql/create-warehouse,,3.0 Performance Concepts (15%)
 270,"Query results are stored in the Result Cache for how long after they are last accessed, assuming no data changes have occurred?",A,24 hours,12 hours,3 Hours,1 Hour,,,,https://community.snowflake.com/s/article/Caching-in-the-Snowflake-Cloud-Data-Platform,,3.0 Performance Concepts (15%)
-271,Which is true of Snowflake network policies? A Snowflake network policy: (Choose two.),"D,E",Is activated using an ALTER DATABASE command,Is only available to customers with Business Critical Edition,Only ACCOUNTADMIN role or a role with the global CREATE NETWORK POLICY privilege can create network policies,Is available to all Snowflake Editions,Restricts or enables access to specific IP addresses,,,https://docs.snowflake.com/en/user-guide/network-policies,,2.0 Account Access and Security (20%)
+271,Which is true of Snowflake network policies? (Choose two.),"D,E",A Snowflake network policy is activated using an ALTER DATABASE command,A Snowflake network policy is only available to customers with Business Critical Edition,Only ACCOUNTADMIN role or a role with the global CREATE NETWORK POLICY privilege can create network policies,A Snowflake network policy is available to all Snowflake Editions,A Snowflake network policy restricts or enables access to specific IP addresses,,,https://docs.snowflake.com/en/user-guide/network-policies,,2.0 Account Access and Security (20%)
 272,How does a scoped URL expire?,C,The encoded URL access is permanent,The length of time is specified in the expiration_time argument,When the persisted query result period ends,When the data cache clears,,,"Types of URLs Available to Access Files in cloud storage:\n
 
 Scoped URL: Encoded URL that permits temporary access to a staged file without granting privileges to the stage. The URL expires when the persisted query result period ends (i.e. the results cache expires), which is currently 24 hours.\n
@@ -1168,7 +1172,7 @@ UDTFs can return multiple rows for each input row; that’s the only difference 
 490,What is the most granular object that the Time Travel retention period can be defined on?,B,Account,Table,Schema,Database,,,"The time travel data retention can be overwritten at the table level ""When creating a table, schema, or database, the account default can be overridden using the DATA_RETENTION_TIME_IN_DAYS parameter in the command.""",https://docs.snowflake.com/en/user-guide/data-time-travel,,6.0 Data Protection and Data Sharing (10%)
 491,The use of which Snowflake table type will reduce costs when working with ETL workflows?,A,Temporary,Transient,Permanent,External,,,"Snowflake supports creating temporary tables for storing non-permanent, transitory data (e.g. ETL data, session-specific data). Temporary tables only exist within the session in which they were created and persist only for the remainder of the session.",https://docs.snowflake.com/en/user-guide/tables-temp-transient,,1.0 Snowflake AI Data Cloud Features and Architecture (25%)
 492,Which of the following statements would be used to export/unload data from Snowflake?,C,EXPORT TO @stage,"EXPORT_TO_STAGE(stage => @stage, select => 'select * from t1');",COPY INTO @stage,INSERT INTO @stage,,,,https://docs.snowflake.com/en/user-guide/data-unload-considerations,,4.0 Data Loading and Unloading (10%)
-493,"What is the main function of Business Intelligence tools (e.g., Tableau or Quicksight)?",B,Carry out Machine Learning analysis,Create charts from Snowflake data to give more business insights,Transform data from other source systems and move them into Snowflake stages,Extract data from other source systems and move them into Snowflake stages,,,"Business Intelligence (BI) tools are software applications that enable organizations to collect, analyze, and present data in a user-friendly way to make better business decisions. BI tools can help organizations identify trends, patterns, and insights in their data, which can optimize business processes, improve performance, and gain a competitive advantage. You can create charts like this one using Tableau from Snowflake data. You should create views to be able to use VARIANT columns in these types of tools, apart from paying them separately.",https://docs.snowflake.com/en/user-guide/ecosystem-bi,,1.0 Snowflake AI Data Cloud Features and Architecture (25%)
+493,What is the main function of Business Intelligence tools (e.g. Tableau or Quicksight)?,B,Carry out Machine Learning analysis,Create charts from Snowflake data to give more business insights,Transform data from other source systems and move them into Snowflake stages,Extract data from other source systems and move them into Snowflake stages,,,"Business Intelligence (BI) tools are software applications that enable organizations to collect, analyze, and present data in a user-friendly way to make better business decisions. BI tools can help organizations identify trends, patterns, and insights in their data, which can optimize business processes, improve performance, and gain a competitive advantage. You can create charts like this one using Tableau from Snowflake data. You should create views to be able to use VARIANT columns in these types of tools, apart from paying them separately.",https://docs.snowflake.com/en/user-guide/ecosystem-bi,,1.0 Snowflake AI Data Cloud Features and Architecture (25%)
 494,What is the minimum Snowflake edition that provides data sharing?,A,Standard,Enterprise,Business Critical Edition,Premier,,,,https://docs.snowflake.com/en/user-guide/intro-editions#data-sharing,,1.0 Snowflake AI Data Cloud Features and Architecture (25%)
 495,At what level can the ALLOW_CLIENT_MFA_CACHING parameter be set?,B,Session,Account,Role,User,,,Account — Can only be set for Account,https://docs.snowflake.com/en/sql-reference/parameters#label-allow-client-mfa-caching,,2.0 Account Access and Security (20%)
 496,"Which SQL command will download all the data files from an internal table stage named TBL_EMPLOYEE to a local window directory or folder on a client machine in a folder named ""folder with space"" within the C drive?",C,PUT 'file://C:\folder with space\*' @%TBL_EMPLOYEE;,PUT 'file://C:/folder with space/*' @%TBL_EMPLOYEE;,GET @%TBL_EMPLOYEE 'file://C:/folder with space/';,GET @%TBL_EMPLOYEE 'file://C:\folder with space\';,,,"If the directory path includes special characters, the entire file URI must be enclosed in single quotes. Note that the drive and path separator is a forward slash (/) in enclosed URIs (e.g. 'file://C:/temp/load data' for a path in Windows that includes a directory named load data).",https://docs.snowflake.com/en/sql-reference/sql/get,,4.0 Data Loading and Unloading (10%)
@@ -1271,6 +1275,7 @@ It returns task activity within the last 7 days or the next scheduled execution 
 
 You can still abort a running transaction with the system function: SYSTEM$ABORT_TRANSACTION.",https://docs.snowflake.com/en/sql-reference/transactions#aborting-transactions,,5.0 Data Transformations (20%)
 538,"What would happen if we executed the following command?
+
     CREATE OR REPLACE TABLE newTable
     CLONE table1;",D,"“newTable” is created, and Snowflake internally executes a pipe to copy all the data from “table1”",“newTable” is created with all the data from “table1”,"“newTable” is created, and Snowflake internally executes a batch job to copy all the data from “table1”",Snowflake creates a new entry in the metadata store to keep track of the new clone; the existing micro-partitions of “table1” are mapped to the new table,,,"Zero-Copy cloning does NOT duplicate data; it duplicates the metadata of the micro-partitions. When you modify some cloned data, it will consume storage.",https://docs.snowflake.com/en/user-guide/object-clone,,6.0 Data Protection and Data Sharing (10%)
 539,What is the abbreviated form to get all the files in the stage for the current user?,D,SHOW @%;,LIST @~;,LS @usr;,LS @~;,,,LIST (normal form) / LS (abbrev form),https://docs.snowflake.com/en/sql-reference/sql/list,,4.0 Data Loading and Unloading (10%)
@@ -1366,7 +1371,8 @@ Loading data into a cloud provider as a consumer account is not required to leve
 
 Data transformations may not be required when combining Data Marketplace datasets with existing data in Snowflake, as it depends on the specific data being used and how it needs to be combined or analyzed.",https://docs.snowflake.com/en/user-guide/data-share-consumers,,6.0 Data Protection and Data Sharing (10%)
 586,"If you want a dedicated virtual warehouse, which is the lowest Snowflake edition you should opt for?",D,Virtual Private Snowflake,Enterprise,Business Critical,Standard,,,"In Snowflake, all the Virtual Warehouses are dedicated to the users. If you create a virtual warehouse, you will only be the one using it.",https://docs.snowflake.com/en/user-guide/intro-editions,,1.0 Snowflake AI Data Cloud Features and Architecture (25%)
-587,"A permanent table and temporary table have the same name, tbl1, in a schema. What will happen if a user executes: 
+587,"A permanent table and temporary table have the same name, tbl1, in a schema. What will happen if a user executes:
+ 
     SELECT * FROM tbl1;?",D,The permanent table will take precedence over the temporary table,The table that was created most recently will take precedence over the older table,An error will say there cannot be two tables with the same name in a schema,The temporary table will take precedence over the permanent table,,,All queries and other operations performed in the session on the table affect only the temporary table.,https://docs.snowflake.com/en/user-guide/tables-temp-transient#potential-naming-conflicts-with-other-table-types,,1.0 Snowflake AI Data Cloud Features and Architecture (25%)
 588,For how long are we billed if our warehouse runs for 48 seconds?,C,We are not going to be billed if the query scans less than 10 micro-partitions,We are not going to be billed as the warehouse hasn't run for 1 minute,1 minute,48 seconds,,,"When compute resources are provisioned for a warehouse, the minimum billing charge for provisioning compute resources is 1 minute. Even if your warehouse runs for less than a minute, we will be billed for a minute.",https://docs.snowflake.com/en/user-guide/cost-understanding-compute#label-virtual-warehouse-credit-usage,,3.0 Performance Concepts (15%)
 589,"A warehouse ran for 62 seconds, and it was suspended. After some time, it ran for another 20 seconds. For how many seconds will you be billed?",A,122 seconds,62 seconds,20 seconds,92 seconds,,,"You will be billed for 122 seconds (62 + 60 seconds) because warehouses are billed for a minimum of one minute. The price would be different if the warehouse wasn't suspended before executing the second query.\n
@@ -1424,14 +1430,14 @@ External Tokenization is a data protection method in Snowflake that allows organ
 Both features require Enterprise Edition (or higher).",https://docs.snowflake.com/en/user-guide/security-column-intro,,2.0 Account Access and Security (20%)
 626,"You have the following data in a variant column, ""src,"" in the table “myTable.” How can you query the favorite technology that Chris Snow uses?
 
-{ 
-""name"": ""Chris Snow"",
-""favouriteTechnology"": Snowflake,
-""hobbies"":[ 
-        {""name"": ""soccer""},
-        {""name"": ""music""},
-        {""name"": ""hiking""}
- ]}",D,SELECT src:$favouriteTechnology FROM myTable;,SELECT favouriteTechnology FROM myTable;,SELECT CONVERT_JSON(src:favouriteTechnology) FROM myTable;,SELECT src:favouriteTechnology FROM myTable;,,,,https://docs.snowflake.com/en/user-guide/querying-semistructured,,5.0 Data Transformations (20%)
+    { 
+    ""name"": ""Chris Snow"",
+    ""favouriteTechnology"": Snowflake,
+    ""hobbies"":[ 
+            {""name"": ""soccer""},
+            {""name"": ""music""},
+            {""name"": ""hiking""}
+     ]}",D,SELECT src:$favouriteTechnology FROM myTable;,SELECT favouriteTechnology FROM myTable;,SELECT CONVERT_JSON(src:favouriteTechnology) FROM myTable;,SELECT src:favouriteTechnology FROM myTable;,,,,https://docs.snowflake.com/en/user-guide/querying-semistructured,,5.0 Data Transformations (20%)
 627,"How many credits will be consumed by a medium-size warehouse with 2 clusters running in auto-scaled mode for 3 hours, considering that the first cluster runs continuously and the second one runs for 30 minutes in the second hour?",C,10,16,14,8,,,"A medium size warehouse with one cluster consumes four credits per hour. The first cluster will run continuously for three hours, consuming 12 credits. The second one will run for only 30 minutes, consuming two credits. The total of the warehouse will be 14 credits.",https://docs.snowflake.com/en/user-guide/warehouses-overview#warehouse-size,,3.0 Performance Concepts (15%)
 628,What happens when a network policy includes values that appear in both the allowed and blocked IP address lists?,C,Snowflake issues an error message and adds the duplicate IP address values to both the allowed and blocked IP address lists,Those IP addresses are allowed access to the Snowflake account as Snowflake applies the allowed IP address list first,Those IP addresses are denied access to the Snowflake account as Snowflake applies the blocked IP address list first,Snowflake issues an alert message and adds the duplicate IP address values to both the allowed and blocked IP address lists,,,"When a network policy includes values in both the allowed and blocked IP address lists, Snowflake applies the blocked IP address list first.",https://docs.snowflake.com/en/user-guide/network-policies,,2.0 Account Access and Security (20%)
 629,Which of the following commands cannot be executed from the Snowflake UI? (Choose two.),"A,D",PUT,LIST <stages>,COPY INTO,GET,SHOW,,"These two commands cannot be executed from the Snowflake web interface; instead, you should use the SnowSQL client to GET or PUT data files.","https://docs.snowflake.com/en/sql-reference/sql/put, https://docs.snowflake.com/en/sql-reference/sql/get",,1.0 Snowflake AI Data Cloud Features and Architecture (25%)
@@ -1448,7 +1454,9 @@ As of documentation date 2024-08. Snowsight evolves frequently, this question ma
 The command cannot be executed from the Worksheets page in either Snowflake web interface; instead, use the SnowSQL client or Drivers to upload data files, or check the documentation for a specific Snowflake client to verify support for this command.",https://docs.snowflake.com/en/sql-reference/sql/put,,1.0 Snowflake AI Data Cloud Features and Architecture (25%)
 633,"A user is unloading data to a stage using this command:
 
-COPY INTO @message FROM (SELECT OBJECT_CONSTRUCT('id', 1, 'first_name', 'Snowflake', 'last_name', 'User', 'city', 'Bozeman')) FILE_FORMAT = (TYPE = JSON)
+    COPY INTO @message 
+    FROM (SELECT OBJECT_CONSTRUCT('id', 1, 'first_name', 'Snowflake', 'last_name', 'User', 'city', 'Bozeman')) 
+    FILE_FORMAT = (TYPE = JSON)
 
 What will the output file in the stage be?",C,A single uncompressed JSON file with multiple VARIANT columns,Multiple uncompressed JSON files with multiple VARIANT columns,A single compressed JSON file with a single VARIANT column,Multiple compressed JSON files with a single VARIANT column,,,You can use the OBJECT_CONSTRUCT function combined with the COPY command to convert the rows in a relational table to a single VARIANT column and unload the rows into a file.,https://docs.snowflake.com/en/user-guide/data-unload-considerations#unloading-a-relational-table-to-json,,5.0 Data Transformations (20%)
 634,Which term is used to describe information about disk usage for operations where intermediate results cannot be accommodated in a Snowflake virtual warehouse memory?,A,Spilling,Pruning,Join explosion,Queue overloading,,,"When Snowflake warehouse cannot fit an operation in memory, it starts spilling (storing) data first to the local disk of a warehouse node, and then to remote storage.\n
@@ -1465,7 +1473,7 @@ A temporary table is purged once the session ends, so the retention period is fo
 640,Which statement is true about Multi-Factor Authentication (MFA) in Snowflake?,A,Any Snowflake user can self-enroll in MFA through the web interface,Snowflake users are automatically enrolled in MFA,MFA can be enforced or applied for a given role,Users enroll in MFA by submitting a request to Snowflake Support,,,,https://docs.snowflake.com/en/user-guide/security-mfa,,2.0 Account Access and Security (20%)
 641,"A sales table, fct_sales, has 100 million records. The following query was executed:
 
-SELECT COUNT (1) FROM fct_sales;
+    SELECT COUNT (1) FROM fct_sales;
 
 How did Snowflake fulfill this query?",B,Query against a virtual warehouse cache,Query against the metadata cache,Query against the most-recently created micro-partition,Query against the result set cache,,,The count() is one of the operations that is resolved in the Metadata Layer.,https://docs.snowflake.com/en/user-guide/ui-query-profile#metadata-operators,,3.0 Performance Concepts (15%)
 642,"Based on Snowflake recommendations, when creating a hierarchy of custom roles, the top-most custom role should be assigned to which role?",C,USERADMIN,SECURITYADMIN,SYSADMIN,ACCOUNTADMIN,,,,https://docs.snowflake.com/en/user-guide/security-access-control-overview#custom-roles,,2.0 Account Access and Security (20%)
@@ -1521,6 +1529,7 @@ For security or privacy reasons, you might not wish to expose the underlying tab
 -Approve or deny provider profile approval requests.\n
 -Show categories.",https://docs.snowflake.com/en/user-guide/data-exchange-marketplace-privileges,,6.0 Data Protection and Data Sharing (10%)
 668,"What is the output of the command:
+
     SELECT TOP 100 grades
     FROM USERS;",C,The TOP 100 grades in ascendent order,The TOP 100 grades ordered by the creation date of the data,Non-deterministic list of 100 grades,The TOP 100 grades in descendent order,,,We'd need the ORDER BY clause if we want to generate the other results.,"https://docs.snowflake.com/en/sql-reference/sql/select, https://docs.snowflake.com/en/sql-reference/constructs/top_n, https://docs.snowflake.com/en/sql-reference/constructs/order-by",,3.0 Performance Concepts (15%)
 669,What is the COPY INTO command option default for unloading data into multiple files?,A,SINGLE = FALSE,SINGLE = TRUE,SINGLE = NULL,SINGLE = 0,,,The COPY INTO <location> command provides a copy option (SINGLE) for unloading data into a single file or multiple files. The default is SINGLE = FALSE (i.e. unload into multiple files).,https://docs.snowflake.com/en/user-guide/data-unload-overview,,4.0 Data Loading and Unloading (10%)
@@ -1528,14 +1537,14 @@ For security or privacy reasons, you might not wish to expose the underlying tab
 671,"You have a multi-cluster warehouse running with the standard scaling policy. The maximum number of clusters is set to 8. If a lot of queries are queried, and the warehouse is constantly starting new clusters, what is the maximum time the warehouse will start all the clusters?",B,8 minutes,160 seconds,They all start at the same time,80 seconds,,,"Each successive cluster waits to start 20 seconds after the prior one has started. For example, if your warehouse is configured with ten max clusters, it can take 200+ seconds to start all 10 clusters. This doesn't happen using the economy policy, that it will only start new clusters if the system estimates there’s enough query load to keep the cluster busy for at least 6 minutes. You can take a look to the following picture to know the differences between these scaling policies:",https://docs.snowflake.com/en/user-guide/warehouses-multicluster#setting-the-scaling-policy-for-a-multi-cluster-warehouse,,3.0 Performance Concepts (15%)
 672,"You have the following data in a variant column called “person_data” from the table “myTable”. How can you query the second hobby of Chris (“music”)?
 
-{ 
-""name"": ""Chris"",
-""favouriteTechnology"": Snowflake,
-""hobbies"":[ 
-	{""name"": ""soccer""},
-	{""name"": ""music""},
-	{""name"": ""hiking""}
- ]}",C,SELECT person_data:hobbies(1),SELECT person_data:hobbies[1],SELECT person_data:hobbies[1].name,SELECT person_data:hobbies(1).name,,,,https://docs.snowflake.com/en/user-guide/querying-semistructured,,5.0 Data Transformations (20%)
+    { 
+    ""name"": ""Chris"",
+    ""favouriteTechnology"": Snowflake,
+    ""hobbies"":[ 
+            {""name"": ""soccer""},
+            {""name"": ""music""},
+            {""name"": ""hiking""}
+    ]}",C,SELECT person_data:hobbies(1),SELECT person_data:hobbies[1],SELECT person_data:hobbies[1].name,SELECT person_data:hobbies(1).name,,,,https://docs.snowflake.com/en/user-guide/querying-semistructured,,5.0 Data Transformations (20%)
 673,Which Snowflake URL type is used by directory tables?,D,Pre-signed,Scoped,Virtual-hosted style,File,,,"Conceptually, directory tables are similar to external tables in that they store file-level metadata about the data files in a stage. Query a directory table to retrieve the Snowflake-hosted file URL to each file in the stage. A file URL permits prolonged access to a specified file. That is, the file URL does not expire. The same file URL is returned by calling the BUILD_STAGE_FILE_URL function.",https://docs.snowflake.com/en/user-guide/data-load-dirtables,,5.0 Data Transformations (20%)
 674,A view is defined on a permanent table. A temporary table with the same name is created in the same schema as the referenced table. What will the query from the view return?,D,An error stating that the referenced object could not be uniquely identified,An error stating that the view could not be compiled,The data from the permanent table,The data from the temporary table,,,"Similar to the other table types (transient and permanent), temporary tables belong to a specified database and schema; however, because they are session-based, they aren't bound by the same uniqueness requirements. This means you can create temporary and non-temporary tables with the same name within the same schema.\n
 
@@ -1778,9 +1787,9 @@ Data classification is a multi-step process that associates Snowflake-defined ta
 Based on the tracking information and related audit processes, the data engineer can protect the column containing personal or sensitive data with a masking policy or the table containing this column with a row access policy.",https://docs.snowflake.com/en/user-guide/governance-classify-concepts,,2.0 Account Access and Security (20%)
 784,"The following settings are configured:
 
-THE MIN_DATA_RETENTION_TIME_IN_DAYS is set to 5 at the account level.
+    THE MIN_DATA_RETENTION_TIME_IN_DAYS is set to 5 at the account level.
 
-THE DATA_RETENTION_TIME_IN_DAYS is set to 2 at the object level.
+    THE DATA_RETENTION_TIME_IN_DAYS is set to 2 at the object level.
 
 For how many days will the data be retained at the object level?",B,2,5,7,3,,,"The MIN_DATA_RETENTION_TIME_IN_DAYS account parameter can be set by users with the ACCOUNTADMIN role to set a minimum retention period for the account. This parameter does not alter or replace the DATA_RETENTION_TIME_IN_DAYS parameter value. However it may change the effective data retention time. When this parameter is set at the account level, the effective minimum data retention period for an object is determined by MAX(DATA_RETENTION_TIME_IN_DAYS, MIN_DATA_RETENTION_TIME_IN_DAYS).",https://docs.snowflake.com/en/user-guide/data-time-travel#data-retention-period,,5.0 Data Transformations (20%)
 785,Which SQL command can be used to see the CREATE definition of a masking policy?,B,DESCRIBE MASKING POLICY,GET_DDL,SHOW MASKING POLICIES,LIST MASKING POLICIES,,,"GET_DDL returns the create statement to recreate the object.\n
