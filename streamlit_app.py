@@ -200,17 +200,19 @@ def display_question(question_row, question_number, total_questions):
             st.error(f"Incorrect! The correct answer(s): {', '.join(correct_answers)}",icon="❌")
 
 
-    # Show explanation and documentation
+    # Show explanation, domain, and documentation
         if pd.notna(question_row['EXPLANATION/NOTES']):
             explanation = question_row['EXPLANATION/NOTES'].replace('\\n', '\n')  # Ensure line breaks are preserved
-            topic = question_row['Topic(s)'] if pd.notna(question_row['Topic(s)']) else "N/A"  # Fetch the Topic(s)
             st.markdown(f"""
                 <div style="background-color: #34495e; padding: 10px; border-radius: 5px;">
                     <strong>Explanation/Notes:</strong><br>
                     {explanation}<br><br>
-                    <strong>Exam Domains(s):</strong> {topic}
                 </div>
                 """, unsafe_allow_html=True)  # Use custom HTML for the colored box
+            
+        if pd.notna(question_row['Exam Domain']):
+            domain = question_row['Exam Domain'] if pd.notna(question_row['Exam Domain']) else "N/A"  # Fetch the Exam Domain
+            st.write(f"**Exam Domain:** {domain}")
 
         if pd.notna(question_row['Snowflake Documentation']):
             doc_links = display_snowflake_docs(question_row['Snowflake Documentation'])
@@ -257,7 +259,7 @@ def update_quiz_review(question_row, question_key, correct_answers):
         'Explanation': question_row['EXPLANATION/NOTES'] if pd.notna(question_row['EXPLANATION/NOTES']) else 'N/A',
         'Snowflake Documentation': ', '.join(display_snowflake_docs(question_row['Snowflake Documentation'])),
         'Flagged': st.session_state[question_key]['flagged'],  # Store the current flagged status
-        'Exam Domain(s)': question_row['Topic(s)'] if pd.notna(question_row['Topic(s)']) else 'N/A'  # Store the topic
+        'Exam Domain': question_row['Exam Domain'] if pd.notna(question_row['Exam Domain']) else 'N/A'  # Store the domain
     })
 
 # Function to display the review of the quiz at the end

@@ -1,4 +1,4 @@
-QID,QUESTION,CORRECT ANSWER,A,B,C,D,E,F,EXPLANATION/NOTES,Snowflake Documentation,Image URL,Topic(s)
+QID,QUESTION,CORRECT ANSWER,A,B,C,D,E,F,EXPLANATION/NOTES,Snowflake Documentation,Image URL,Exam Domain
 1,Will data cached in a warehouse be lost when the warehouse is resized?,A,"Possibly, if the warehouse is resized to a smaller size and the cache no longer fits","Yes, because the compute resource is replaced in its entirety with a new compute resource","No, because the size of the cache is independent from the warehouse size","Yes, because the new compute resource will no longer have access to the cache encryption key",,,"Unlike Metadata cache or Query Result cache, Warehouse cache is usable through the specific VWH only\n
 VWH cache gets cleared when VWH is suspended\n
 If cache-size is too small, least-recently-used data is emptied first",https://docs.snowflake.com/en/user-guide/warehouses-considerations#scaling-up-vs-scaling-out,,3.0 Performance Concepts (15%)
