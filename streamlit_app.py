@@ -83,6 +83,14 @@ def start_quiz_callback():
     num_questions = st.session_state['num_questions']
     st.session_state['selected_questions'] = questions_df.sample(n=int(num_questions)).reset_index(drop=True)
 
+    # Initialize domain totals for the selected questions in the quiz
+    st.session_state['domain_scores'] = {}
+    for _, row in st.session_state['selected_questions'].iterrows():
+        domain = row['Exam Domain'] if pd.notna(row['Exam Domain']) else 'N/A'
+        if domain not in st.session_state['domain_scores']:
+            st.session_state['domain_scores'][domain] = {'correct': 0, 'total': 0}
+        st.session_state['domain_scores'][domain]['total'] += 1  # Count total questions for each domain in the quiz
+
 # SECTION 3: Display Questions
 # Callback function to move to the next question
 def next_question_callback():
@@ -245,21 +253,31 @@ def update_quiz_review(question_row, question_key, correct_answers):
     if 'quiz_review' not in st.session_state:
         st.session_state['quiz_review'] = []
 
-    # Remove the existing entry for this question if it exists
+    # Remove any existing entry for this question
     st.session_state['quiz_review'] = [
         q for q in st.session_state['quiz_review'] if q['Question'] != question_row['QUESTION']
     ]
 
-    # Add the updated entry
+    # Determine if the answer was correct
+    is_correct = st.session_state[question_key]['answered_correctly']
+    
+    # Get the Exam Domain for this question
+    domain = question_row.get('Exam Domain', 'N/A')
+    
+    # Increment correct count for this domain if the answer was correct
+    if is_correct:
+        st.session_state['domain_scores'][domain]['correct'] += 1
+
+    # Add the updated entry to the review list
     st.session_state['quiz_review'].append({
         'Question': question_row['QUESTION'],
         'Your Answer': ', '.join(st.session_state[question_key]['selected_options']) if st.session_state[question_key]['selected_options'] else 'N/A',
         'Correct Answer': ', '.join(correct_answers),
-        'Correct?': 'Yes' if st.session_state[question_key]['answered_correctly'] else 'No',
+        'Correct?': 'Yes' if is_correct else 'No',
         'Explanation': question_row['EXPLANATION/NOTES'] if pd.notna(question_row['EXPLANATION/NOTES']) else 'N/A',
         'Snowflake Documentation': ', '.join(display_snowflake_docs(question_row['Snowflake Documentation'])),
         'Flagged': st.session_state[question_key]['flagged'],  # Store the current flagged status
-        'Exam Domain': question_row['Exam Domain'] if pd.notna(question_row['Exam Domain']) else 'N/A'  # Store the domain
+        'Exam Domain': domain  # Store the domain
     })
 
 # Function to display the review of the quiz at the end
@@ -275,7 +293,7 @@ def display_quiz_review(flagged_only=False):
             review_df = review_df[review_df['Flagged'] == True]
 
         # Reorder the columns to include 'Flagged'
-        review_df = review_df[['Question', 'Flagged','Correct?', 'Correct Answer', 'Your Answer', 'Explanation', 'Snowflake Documentation','Exam Domain(s)']]
+        review_df = review_df[['Question', 'Flagged','Correct?', 'Correct Answer', 'Your Answer', 'Explanation', 'Snowflake Documentation','Exam Domain']]
 
         # Replace the 'Snowflake Documentation' column with the full URLs, removing the "Snowflake Documentation(1)" text
         review_df['Snowflake Documentation'] = review_df['Snowflake Documentation'].apply(lambda doc: ', '.join(re.findall(r'\((https?://[^\)]+)\)', doc)))
@@ -285,6 +303,23 @@ def display_quiz_review(flagged_only=False):
 
         # Display the DataFrame with st.write()
         st.write(review_df)
+
+# Function to display domain-wise scores
+def display_domain_scores():
+    """Display the breakdown of scores by domain at the end of the quiz."""
+    if 'domain_scores' in st.session_state:
+        st.write("## Domain Score Breakdown")
+        domain_data = []
+        for domain, scores in st.session_state['domain_scores'].items():
+            correct = scores['correct']
+            total = scores['total']
+            percentage = (correct / total) * 100 if total > 0 else 0.0
+            domain_data.append({'Domain': domain, 'Score': f"{correct}/{total}", 'Percentage': f"{percentage:.2f}%"})
+
+        # Convert to DataFrame and display
+        domain_df = pd.DataFrame(domain_data)
+        st.write(domain_df)
+
 
 # SECTION 5: Main Quiz Logic and Final Output
 # Function to start the quiz interface
@@ -396,6 +431,9 @@ def start_quiz():
             st.write(f"## Quiz Completed!")
             st.write(f"**Your Score:** {st.session_state['score']} out of {answered_questions} questions answered (Total exam: {total_selected_questions})")
             st.write(f"**Percentage:** {percentage:.2f}%")
+
+            # Display domain-wise breakdown after quiz completion
+            display_domain_scores()
             
             # Buttons to review flagged or all questions
             if st.button("Review Flagged Questions"):
