@@ -251,74 +251,97 @@ def display_question(question_row, question_number, total_questions):
 def update_quiz_review(question_row, question_key, correct_answers):
     """Update the quiz review with the current question's data."""
     if 'quiz_review' not in st.session_state:
-        st.session_state['quiz_review'] = []
-
-    # Remove any existing entry for this question
-    st.session_state['quiz_review'] = [
-        q for q in st.session_state['quiz_review'] if q['Question'] != question_row['QUESTION']
-    ]
+        st.session_state['quiz_review'] = pd.DataFrame(columns=[
+            'Question', 'Your Answer', 'Correct Answer', 'Correct?', 
+            'Explanation', 'Snowflake Documentation', 'Flagged', 'Exam Domain'
+        ])
 
     # Determine if the answer was correct
     is_correct = st.session_state[question_key]['answered_correctly']
-    
-    # Get the Exam Domain for this question
-    domain = question_row.get('Exam Domain', 'N/A')
-    
-    # Increment correct count for this domain if the answer was correct
-    if is_correct:
-        st.session_state['domain_scores'][domain]['correct'] += 1
 
-    # Add the updated entry to the review list
-    st.session_state['quiz_review'].append({
+    # Prepare the new row for the review DataFrame
+    new_row = {
         'Question': question_row['QUESTION'],
         'Your Answer': ', '.join(st.session_state[question_key]['selected_options']) if st.session_state[question_key]['selected_options'] else 'N/A',
         'Correct Answer': ', '.join(correct_answers),
         'Correct?': 'Yes' if is_correct else 'No',
         'Explanation': question_row['EXPLANATION/NOTES'] if pd.notna(question_row['EXPLANATION/NOTES']) else 'N/A',
         'Snowflake Documentation': ', '.join(display_snowflake_docs(question_row['Snowflake Documentation'])),
-        'Flagged': st.session_state[question_key]['flagged'],  # Store the current flagged status
-        'Exam Domain': domain  # Store the domain
-    })
+        'Flagged': st.session_state[question_key]['flagged'],
+        'Exam Domain': question_row.get('Exam Domain', 'N/A')
+    }
 
-# Function to display the review of the quiz at the end
-def display_quiz_review(flagged_only=False):
-    if 'quiz_review' in st.session_state and st.session_state['quiz_review']:
-        st.write("## Quiz Review")
+    # Remove any existing entry for this question
+    st.session_state['quiz_review'] = st.session_state['quiz_review'][
+        st.session_state['quiz_review']['Question'] != question_row['QUESTION']
+    ]
 
-        # Create a DataFrame from the quiz review data
-        review_df = pd.DataFrame(st.session_state['quiz_review'])
+    # Add the new row using pd.concat
+    st.session_state['quiz_review'] = pd.concat(
+        [st.session_state['quiz_review'], pd.DataFrame([new_row])],
+        ignore_index=True
+    )
 
-        # Filter for flagged questions only if flagged_only is True
-        if flagged_only:
-            review_df = review_df[review_df['Flagged'] == True]
 
-        # Reorder the columns to include 'Flagged'
-        review_df = review_df[['Question', 'Flagged','Correct?', 'Correct Answer', 'Your Answer', 'Explanation', 'Snowflake Documentation','Exam Domain']]
+# Function to create the review dataframe of the quiz at the end
+def get_review_dataframe(flagged_only=False):
+    """Fetch the quiz review DataFrame with optional filtering for flagged questions."""
+    if 'quiz_review' not in st.session_state or st.session_state['quiz_review'].empty:
+        return pd.DataFrame()  # Return empty DataFrame if no data exists
 
-        # Replace the 'Snowflake Documentation' column with the full URLs, removing the "Snowflake Documentation(1)" text
-        review_df['Snowflake Documentation'] = review_df['Snowflake Documentation'].apply(lambda doc: ', '.join(re.findall(r'\((https?://[^\)]+)\)', doc)))
+    review_df = st.session_state['quiz_review'].copy()
 
-        # Shift the index to start at 1 instead of 0
-        review_df.index += 1
+    if flagged_only:
+        review_df = review_df[review_df['Flagged'] == True]
 
-        # Display the DataFrame with st.write()
-        st.write(review_df)
+    # Replace the 'Snowflake Documentation' column with URLs
+    review_df['Snowflake Documentation'] = review_df['Snowflake Documentation'].apply(
+        lambda doc: ', '.join(re.findall(r'\((https?://[^\)]+)\)', doc))
+    )
 
-# Function to display domain-wise scores
+    return review_df
+
 def display_domain_scores():
-    """Display the breakdown of scores by domain at the end of the quiz."""
-    if 'domain_scores' in st.session_state:
-        st.write("## Domain Score Breakdown")
-        domain_data = []
-        for domain, scores in st.session_state['domain_scores'].items():
-            correct = scores['correct']
-            total = scores['total']
-            percentage = (correct / total) * 100 if total > 0 else 0.0
-            domain_data.append({'Domain': domain, 'Score': f"{correct}/{total}", 'Percentage': f"{percentage:.2f}%"})
+    """Calculate and display the domain breakdown."""
+    review_df = get_review_dataframe()
+    if review_df.empty:
+        st.write("No data available for domain scores.")
+        return
 
-        # Convert to DataFrame and display
-        domain_df = pd.DataFrame(domain_data)
-        st.write(domain_df)
+    domain_summary = review_df.groupby('Exam Domain')['Correct?'].apply(
+        lambda x: f"{x.str.count('Yes').sum()}/{len(x)} ({(x.str.count('Yes').sum() / len(x)) * 100:.2f}%)"
+    ).reset_index()
+    domain_summary.columns = ['Exam Domain', 'Score/Percentage']
+
+    st.write("## Domain Score Breakdown")
+    st.write(domain_summary.to_html(index=False, escape=False), unsafe_allow_html=True)
+
+
+def display_all_questions():
+    """Display all questions in the review."""
+    review_df = get_review_dataframe()
+
+    if review_df is None or review_df.empty:
+        st.write("No questions to review.")
+        return  # Exit if no data to display
+
+    st.write("## All Questions Review")
+    # Use st.dataframe for better interactivity or st.write for a static table
+    st.dataframe(review_df)
+
+
+def display_flagged_questions():
+    """Display only flagged questions in the review."""
+    review_df = get_review_dataframe(flagged_only=True)
+
+    if review_df is None or review_df.empty:
+        st.write("No flagged questions.")
+        return  # Exit if no data to display
+
+    st.write("## Flagged Questions")
+    # Use st.dataframe for better interactivity or st.write for a static table
+    st.dataframe(review_df)
+
 
 
 # SECTION 5: Main Quiz Logic and Final Output
@@ -437,10 +460,10 @@ def start_quiz():
             
             # Buttons to review flagged or all questions
             if st.button("Review Flagged Questions"):
-                display_quiz_review(flagged_only=True)
+                display_flagged_questions()
 
             if st.button("Review All Questions"):
-                display_quiz_review(flagged_only=False)
+                display_all_questions()
 
             # Button to restart the quiz
             st.button("Restart Quiz", on_click=restart_quiz)
